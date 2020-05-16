@@ -17,6 +17,11 @@ This project is inspired by [httpstat.us](https://httpstat.us/) and [JoJo's Biza
 
 go to [Release](https://github.com/hjcian/go-echoes/releases) find the latest version. *(released by [goreleaser](https://goreleaser.com/))*
 
+## Pull from DockerHub
+```shell
+$ docker pull hjcian/go-echoes:latest
+```
+
 ## Compiling from source
 
 **Clone:**
@@ -37,14 +42,21 @@ $ go build -o go-echoes
 
 # Usage
 
-## Run server
+## Play with binary
+
+**run server**
 ```bash
 $ ./go-echoes -p 12345
 ```
 
-## Check help
+**check help**
 ```bash
 $ ./go-echoes -h
+```
+
+## Play with Docker
+```bash
+$ docker run -it --rm -p 12345:54321 hjcian/go-echoes
 ```
 
 # Functionalities
