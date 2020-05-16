@@ -6,7 +6,9 @@
 </p>
 
 ---
+![tag](https://img.shields.io/github/tag/hjcian/go-echoes?color=blue)
 [![codecov](https://codecov.io/gh/hjcian/go-echoes/branch/master/graph/badge.svg)](https://codecov.io/gh/hjcian/go-echoes)
+![license](https://img.shields.io/github/license/hjcian/go-echoes)
 
 
 # go-echoes
