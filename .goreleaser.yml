@@ -15,7 +15,8 @@ archives:
     386: i386
     amd64: x86_64
 dockers:
-  - binaries: go-echoes
+  - binaries: 
+    - go-echoes
   - image_templates:
     - hjcian/{{.ProjectName}}:latest
     - hjcian/{{.ProjectName}}:{{ .Version }}
