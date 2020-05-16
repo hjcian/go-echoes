@@ -15,12 +15,13 @@ archives:
     386: i386
     amd64: x86_64
 dockers:
-  - binaries: 
+  -
+    binaries: 
     - go-echoes
-  - image_templates:
-    - hjcian/{{.ProjectName}}:latest
-    - hjcian/{{.ProjectName}}:{{ .Version }}
-  - dockerfile: Dockerfile
+    image_templates:
+    - "hjcian/{{.ProjectName}}:latest"
+    - "hjcian/{{.ProjectName}}:{{ .Version }}"    
+    dockerfile: Dockerfile
 checksum:
   name_template: 'checksums.txt'
 snapshot:
