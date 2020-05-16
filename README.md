@@ -1,6 +1,7 @@
 <p align="center">
   <img alt="go-echoes logo" src="https://vignette.wikia.nocookie.net/jjba/images/0/02/Echoesegg.png/revision/latest?cb=20140715052137" height="240" />
-  <h3 align="center"> go-echoes </h3>
+  <p align='center'> <i>current project phase: <a href="https://jojo.fandom.com/wiki/Echoes">Egg</a></i> </p>
+  <h2 align="center"> go-echoes </h2>
   <p align="center"> A simple HTTP server always reply your call. </p>
 </p>
 
@@ -11,12 +12,10 @@ A simple HTTP server always reply your call.
 
 This project is inspired by [httpstat.us](https://httpstat.us/) and [JoJo's Bizarre Adventure](https://en.wikipedia.org/wiki/JoJo%27s_Bizarre_Adventure), aims to provide a very handy way to start a server for testing your internet environment in ordinary VM machines or K8S.
 
-current phase: [Egg](https://jojo.fandom.com/wiki/Echoes)
-
 # Install
 ## Pre-compiled binary
 
-go to [Release page](https://github.com/hjcian/go-echoes/releases) find the latest version.
+go to [Release](https://github.com/hjcian/go-echoes/releases) find the latest version. *(released by [goreleaser](https://goreleaser.com/))*
 
 ## Compiling from source
 
