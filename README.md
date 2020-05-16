@@ -1,11 +1,13 @@
 <p align="center">
   <img alt="go-echoes logo" src="https://vignette.wikia.nocookie.net/jjba/images/0/02/Echoesegg.png/revision/latest?cb=20140715052137" height="240" />
   <p align='center'> <i>current project phase: <a href="https://jojo.fandom.com/wiki/Echoes">Egg</a></i> </p>
-  <h2 align="center"> go-echoes </h2>
+  <h3 align="center"> go-echoes </h3>
   <p align="center"> A simple HTTP server always reply your call. </p>
 </p>
 
 ---
+[![codecov](https://codecov.io/gh/hjcian/go-echoes/branch/master/graph/badge.svg)](https://codecov.io/gh/hjcian/go-echoes)
+
 
 # go-echoes
 A simple HTTP server always reply your call. 
