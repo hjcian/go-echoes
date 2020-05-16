@@ -15,9 +15,10 @@ archives:
     386: i386
     amd64: x86_64
 dockers:
+  - dockerfile: goreleaser.Dockerfile
   - image_templates:
     - hjcian/{{.ProjectName}}:latest
-    - hjcian/{{.ProjectName}}:{{ .Version }}    
+    - hjcian/{{.ProjectName}}:{{ .Version }}
 checksum:
   name_template: 'checksums.txt'
 snapshot:
