@@ -107,8 +107,11 @@ return status will be 500
 
 # Todo
 - add
-  - auto publish docker image
-  - transfer station mechanism  
+  - [x] auto publish docker image
+  - [ ] version, test coverage bedge
+  - [ ] transfer station mechanism 
 - issue
   - ?
-
+# reminders
+- **test build.** goreleaser --rm-dist --snapshot
+- **release.** goreleaser --rm-dist
