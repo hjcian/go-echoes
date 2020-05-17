@@ -45,7 +45,7 @@ $ go build -o echoes
 
 ```bash
 # Run server:
-$ ./echoes -p 12345
+$ ./echoes -p 54321
 # Check help:
 $ ./echoes -h
 ```
@@ -60,7 +60,7 @@ $ docker run -it --rm -p 12345:54321 hjcian/echoes
 **Request whatever to server**
 
 ```bash
-$ curl -v localhost:12345/helloworld
+$ curl -v localhost:54321/helloworld
 ...
 < HTTP/1.1 200 OK
 < Content-Type: text/plain; charset=utf-8
