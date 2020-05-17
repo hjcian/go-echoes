@@ -23,7 +23,7 @@ go to [Release](https://github.com/hjcian/go-echoes/releases) find the latest ve
 
 **Docker image**
 ```shell
-$ docker pull hjcian/go-echoes:latest
+$ docker pull hjcian/echoes:latest
 ```
 
 **Compiling from source**
@@ -35,7 +35,7 @@ $ cd go-echoes
 # Get the dependencies:
 $ go get ./...
 # Build:
-$ go build -o go-echoes
+$ go build -o echoes
 ```
 
 # Usage
@@ -45,14 +45,14 @@ $ go build -o go-echoes
 
 ```bash
 # Run server:
-$ ./go-echoes -p 12345
+$ ./echoes -p 12345
 # Check help:
-$ ./go-echoes -h
+$ ./echoes -h
 ```
 
 **docker**
 ```bash
-$ docker run -it --rm -p 12345:54321 hjcian/go-echoes
+$ docker run -it --rm -p 12345:54321 hjcian/echoes
 ```
 
 # Functionalities
@@ -74,48 +74,43 @@ your call is helloworld
 **Need special responses from server**
 
 ```bash
-$ curl -v localhost:12345/200
-...
-< HTTP/1.1 200 OK
-< Content-Type: text/plain; charset=utf-8
-< Date: Sat, 16 May 2020 07:53:35 GMT
-< Content-Length: 25
-<
-* Connection #0 to host localhost left intact
+$ curl localhost:54321/200
 return status will be 200
 ```
 
 ```bash
-$ curl -v localhost:12345/400
-...
-< HTTP/1.1 400 Bad Request
-< Content-Type: text/plain; charset=utf-8
-< Date: Sat, 16 May 2020 07:54:52 GMT
-< Content-Length: 25
-<
-* Connection #0 to host localhost left intact
+$ curl localhost:54321/400
 return status will be 400
 ```
 
 ```bash
-$ curl -v localhost:12345/500
-...
-< HTTP/1.1 500 Internal Server Error
-< Content-Type: text/plain; charset=utf-8
-< Date: Sat, 16 May 2020 07:55:14 GMT
-< Content-Length: 25
-<
-* Connection #0 to host localhost left intact
+$ curl localhost:54321/500
 return status will be 500
 ```
 
-# Todo
+**Customize Forwarding Routes**
+```bash
+# run a backend server
+$ docker run --rm -p 12345:54321 -d hjcian/echoes
+# start the proxy server
+$ ./echoes -fwd /foo:localhost:12345/helloworld
+# send query to proxy server
+$ curl localhost:54321/foo
+<- (from http://localhost:12345/helloworld) your call is helloworld
+```
+
+# Dev notes
+## todo
 - add
   - [x] auto publish docker image
-  - [ ] version, test coverage bedge
-  - [ ] transfer station mechanism 
-- issue
-  - ?
-# reminders
+  - [x] version, test coverage bedge
+  - [x] transfer station mechanism
+  - [x] ipify service query for knowing my public ip
+- test
+  - [ ] transfer station mechanism
+  - [ ] ipify service 
+    - [example 1](http://www.inanzzz.com/index.php/post/fb0m/mocking-and-testing-http-clients-in-golang)
+    - [example 2](https://gianarb.it/blog/golang-mockmania-httptest)
+## reminders
 - **test build.** goreleaser --rm-dist --snapshot
 - **release.** goreleaser --rm-dist
