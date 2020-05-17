@@ -73,7 +73,7 @@ $ curl localhost:54321/getip
 112.251.67.240
 ```
 
-*This service is powered by [ipify.org](https://api.ipify.org)*
+*This service is powered by [ipify.org](https://www.ipify.org/)*
 
 **Need special responses from server**
 
@@ -106,6 +106,12 @@ $ curl localhost:54321/foo
 <- (from http://localhost:12345/helloworld) your call is helloworld
 ```
 
+**Description for *-fwd***
+
+> *-fwd route:URL*
+
+- **route.** should starts with '/'. i.e. /foo or /bar/haha
+- **URL.** should be a valid URL for your backend server. You can just put another ***echoes*** as a backend server, and it is what this project intended to.
 
 # Dev notes
 ## todo
