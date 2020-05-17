@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"runtime"
@@ -15,6 +16,10 @@ type Reply struct {
 	status int
 	resp   string
 }
+
+const (
+	ipifyHost = "https://api.ipify.org"
+)
 
 const (
 	robot     string = "your call is"
@@ -40,9 +45,37 @@ func statusSwitch(statusDigit string) (reply *Reply) {
 	}
 }
 
+type PublicIPServer struct {
+	apihost string
+}
+
+func (p PublicIPServer) GetMyPublicIP() (string, error) {
+	resp, err := http.Get(p.apihost)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	text, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return string(text), nil
+}
+
 // SetupEndpoints is setting all needed endpoints for our gin sever
 func SetupEndpoints() *gin.Engine {
 	r := gin.Default()
+	r.GET("/getip", func(c *gin.Context) {
+		server := PublicIPServer{ipifyHost}
+		result, err := server.GetMyPublicIP()
+		if err != nil {
+			c.String(http.StatusBadGateway, err.Error())
+		}
+		c.String(200, result)
+	})
+
 	r.NoRoute(func(c *gin.Context) {
 		anything := c.Request.URL.Path
 		reply := statusSwitch(anything[1:])
