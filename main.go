@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -159,6 +160,8 @@ func usage() {
 }
 
 func main() {
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // https://stackoverflow.com/a/12122718
+
 	flag.Parse()
 
 	r := SetupEndpoints()
