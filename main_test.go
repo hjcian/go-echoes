@@ -92,3 +92,47 @@ func Test_DefaultRoutes(t *testing.T) {
 		assertEqual(test.name, replyWrap, test.expect)
 	}
 }
+
+func Test_fwdOption(t *testing.T) {
+
+	t.Run("AcceptableCases", func(t *testing.T) {
+		tests := []struct {
+			name   string
+			option string
+			expect Forwarders
+		}{
+			{"OK 1", "/foo:1.2.3.4:8080/bar", []Forwarder{Forwarder{"/foo", "http://1.2.3.4:8080/bar"}}},
+			{"OK 2", "/foo:http://1.2.3.4:8080/bar", []Forwarder{Forwarder{"/foo", "http://1.2.3.4:8080/bar"}}},
+			{"OK 3", "/foo:https://1.2.3.4:8080/bar", []Forwarder{Forwarder{"/foo", "https://1.2.3.4:8080/bar"}}},
+		}
+		for _, test := range tests {
+			var fwds Forwarders
+			err := fwds.Set(test.option)
+			if err != nil {
+				t.Errorf("[%v] got err: %v, expect %#v", test.name, err, test.expect)
+			}
+		}
+	})
+
+	t.Run("UnacceptableCases", func(t *testing.T) {
+		tests := []struct {
+			name   string
+			option string
+		}{
+			{"NG 1", "foo:1.2.3.4:8080/bar"},
+			{"NG 2", "/foo:http:///"},
+			{"NG 3", "/foo:https:/1.2.3.4:8080/bar"},
+			{"NG 4", "/foo:https//1.2.3.4:8080/bar"},
+			{"NG 5", "/foo:/1.2.3.4:8080/bar"},
+		}
+		for _, test := range tests {
+			var fwds Forwarders
+			err := fwds.Set(test.option)
+			if err == nil {
+				t.Errorf("[%v] expect an error, got %#v", test.name, fwds)
+			} else {
+				t.Logf("[PASS][%v] got the error: '%v'", test.name, err)
+			}
+		}
+	})
+}
