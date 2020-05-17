@@ -61,13 +61,6 @@ $ docker run -it --rm -p 12345:54321 hjcian/echoes
 
 ```bash
 $ curl -v localhost:54321/helloworld
-...
-< HTTP/1.1 200 OK
-< Content-Type: text/plain; charset=utf-8
-< Date: Sat, 16 May 2020 07:56:50 GMT
-< Content-Length: 23
-<
-* Connection #0 to host localhost left intact
 your call is helloworld
 ```
 
@@ -89,6 +82,9 @@ return status will be 500
 ```
 
 **Customize Forwarding Routes**
+
+You may want to test the connection between the proxy server and backend server from client-side, you can do the following:
+
 ```bash
 # run a backend server
 $ docker run --rm -p 12345:54321 -d hjcian/echoes
