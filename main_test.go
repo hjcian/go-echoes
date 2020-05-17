@@ -124,6 +124,8 @@ func Test_fwdOption(t *testing.T) {
 			{"NG 3", "/foo:https:/1.2.3.4:8080/bar"},
 			{"NG 4", "/foo:https//1.2.3.4:8080/bar"},
 			{"NG 5", "/foo:/1.2.3.4:8080/bar"},
+			{"NG 6", "/foo"},
+			{"NG 7", "/foo:"},
 		}
 		for _, test := range tests {
 			var fwds Forwarders
