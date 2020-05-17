@@ -61,7 +61,7 @@ func performRequest(r http.Handler, method, path string) *httptest.ResponseRecor
 	return w
 }
 
-func Test_Endpoints(t *testing.T) {
+func Test_DefaultRoutes(t *testing.T) {
 
 	assertEqual := func(name string, got, expect Reply) {
 		t.Helper()
