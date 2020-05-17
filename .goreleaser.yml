@@ -14,14 +14,15 @@ archives:
     windows: Windows
     386: i386
     amd64: x86_64
+project_name: echoes
 dockers:
   -
     binaries: 
-    - go-echoes
+    - echoes
     image_templates:
     - "hjcian/{{.ProjectName}}:latest"
     - "hjcian/{{.ProjectName}}:{{ .Version }}"    
-    dockerfile: Dockerfile
+    dockerfile: goreleaser.Dockerfile
 checksum:
   name_template: 'checksums.txt'
 snapshot:
