@@ -43,13 +43,11 @@ func statusSwitch(statusDigit string) (reply *Reply) {
 // SetupEndpoints is setting all needed endpoints for our gin sever
 func SetupEndpoints() *gin.Engine {
 	r := gin.Default()
-
-	r.GET("/*anything", func(c *gin.Context) {
-		anything := c.Param("anything")
+	r.NoRoute(func(c *gin.Context) {
+		anything := c.Request.URL.Path
 		reply := statusSwitch(anything[1:])
 		c.String(reply.status, reply.resp)
 	})
-
 	return r
 }
 
