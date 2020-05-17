@@ -64,6 +64,17 @@ $ curl -v localhost:54321/helloworld
 your call is helloworld
 ```
 
+## Preserved Routes
+
+**Check public IP of that machine**
+
+```bash
+$ curl localhost:54321/getip
+112.251.67.240
+```
+
+*This service is powered by [ipify.org](https://api.ipify.org)*
+
 **Need special responses from server**
 
 ```bash
@@ -81,7 +92,7 @@ $ curl localhost:54321/500
 return status will be 500
 ```
 
-**Customize Forwarding Routes**
+## Customize your routes
 
 You may want to test the connection between the proxy server and backend server from client-side, you can do the following:
 
@@ -94,6 +105,7 @@ $ ./echoes -fwd /foo:localhost:12345/helloworld
 $ curl localhost:54321/foo
 <- (from http://localhost:12345/helloworld) your call is helloworld
 ```
+
 
 # Dev notes
 ## todo
