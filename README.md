@@ -116,6 +116,10 @@ $ curl localhost:54321/foo
 # Dev notes
 ## todo
 - add
+  - [ ] read route forwardings from ENV
+  - [ ] CPU/Mem info
+  - [ ] check disk mounting info
+  - [x] response time measurements (every time and auto stats[mean, stdev])
   - [x] auto publish docker image
   - [x] version, test coverage bedge
   - [x] transfer station mechanism
