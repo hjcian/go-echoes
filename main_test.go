@@ -61,7 +61,18 @@ func performRequest(r http.Handler, method, path string) *httptest.ResponseRecor
 	return w
 }
 
-func Test_DefaultRoutes(t *testing.T) {
+const mockResp = "MockResource"
+
+type MockResource struct {
+	addr string
+}
+
+func (r MockResource) API() string { return r.addr }
+func (r MockResource) Get() *Reply {
+	return &Reply{http.StatusOK, mockResp}
+}
+
+func Test_Routes(t *testing.T) {
 
 	assertEqual := func(name string, got, expect Reply) {
 		t.Helper()
@@ -74,23 +85,57 @@ func Test_DefaultRoutes(t *testing.T) {
 		}
 	}
 
-	tests := []struct {
-		name     string
-		endpoint string
-		expect   Reply
-	}{
-		{"", "/", Reply{http.StatusOK, emptyCall}},
-		{"", "/200", Reply{http.StatusOK, resp200}},
-		{"", "/400", Reply{http.StatusBadRequest, resp400}},
-		{"", "/500", Reply{http.StatusInternalServerError, resp500}},
+	assertStatus := func(name string, got, expect Reply) {
+		t.Helper()
+		if got.status != expect.status {
+			t.Errorf("[%v] expect %#v, got %#v",
+				name,
+				expect,
+				got,
+			)
+		}
 	}
 
-	for _, test := range tests {
-		r := SetupEndpoints()
-		resp := performRequest(r, "GET", test.endpoint)
-		replyWrap := Reply{resp.Code, resp.Body.String()}
-		assertEqual(test.name, replyWrap, test.expect)
-	}
+	t.Run("Basic Routes", func(t *testing.T) {
+		tests := []struct {
+			name     string
+			endpoint string
+			expect   Reply
+		}{
+			{"", "/", Reply{http.StatusOK, emptyCall}},
+			{"", "/200", Reply{http.StatusOK, resp200}},
+			{"", "/400", Reply{http.StatusBadRequest, resp400}},
+			{"", "/500", Reply{http.StatusInternalServerError, resp500}},
+		}
+
+		for _, test := range tests {
+			r := setupDefaults()
+			resp := performRequest(r, "GET", test.endpoint)
+			replyWrap := Reply{resp.Code, resp.Body.String()}
+			assertEqual(test.name, replyWrap, test.expect)
+		}
+	})
+
+	t.Run("Builtin Services", func(t *testing.T) {
+		fwds := []Forwarder{
+			*makeForwarder("/getip", MockResource{"ipify"}),
+		}
+		r := setupDefaults()
+		r = setupForwardings(r, fwds)
+
+		tests := []struct {
+			name     string
+			endpoint string
+			expect   Reply
+		}{
+			{"", "/getip", Reply{http.StatusOK, ""}},
+		}
+		for _, test := range tests {
+			resp := performRequest(r, "GET", test.endpoint)
+			replyWrap := Reply{resp.Code, resp.Body.String()}
+			assertStatus(test.name, replyWrap, test.expect)
+		}
+	})
 }
 
 func Test_fwdOption(t *testing.T) {
@@ -101,9 +146,9 @@ func Test_fwdOption(t *testing.T) {
 			option string
 			expect Forwarders
 		}{
-			{"OK 1", "/foo:1.2.3.4:8080/bar", []Forwarder{Forwarder{"/foo", "http://1.2.3.4:8080/bar"}}},
-			{"OK 2", "/foo:http://1.2.3.4:8080/bar", []Forwarder{Forwarder{"/foo", "http://1.2.3.4:8080/bar"}}},
-			{"OK 3", "/foo:https://1.2.3.4:8080/bar", []Forwarder{Forwarder{"/foo", "https://1.2.3.4:8080/bar"}}},
+			{"OK 1", "/foo:1.2.3.4:8080/bar", []Forwarder{Forwarder{"/foo", Resource{"http://1.2.3.4:8080/bar"}}}},
+			{"OK 2", "/foo:http://1.2.3.4:8080/bar", []Forwarder{Forwarder{"/foo", Resource{"http://1.2.3.4:8080/bar"}}}},
+			{"OK 3", "/foo:https://1.2.3.4:8080/bar", []Forwarder{Forwarder{"/foo", Resource{"https://1.2.3.4:8080/bar"}}}},
 		}
 		for _, test := range tests {
 			var fwds Forwarders
