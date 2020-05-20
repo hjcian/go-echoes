@@ -10,6 +10,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -48,10 +49,16 @@ func statusSwitch(statusDigit string) (reply *Reply) {
 	}
 }
 
+type ResourceGetter interface {
+	Get() *Reply
+	API() string
+}
+
 type Resource struct {
 	addr string
 }
 
+func (r Resource) API() string { return r.addr }
 func (r Resource) Get() *Reply {
 	resp, err := http.Get(r.addr)
 	if err != nil {
@@ -67,14 +74,21 @@ func (r Resource) Get() *Reply {
 	return &Reply{http.StatusOK, string(text)}
 }
 
-// SetupEndpoints is setting all needed endpoints for our gin sever
-func SetupEndpoints() *gin.Engine {
+func GetResource(getter ResourceGetter) *Reply {
+	start := time.Now()
+	reply := getter.Get()
+	diff := time.Since(start)
+	embedReply := Reply{reply.status, fmt.Sprintf(
+		"<- (delay %v from %v) %v",
+		diff.Round(time.Microsecond).String(),
+		getter.API(),
+		reply.resp,
+	)}
+	return &embedReply
+}
+
+func setupDefaults() *gin.Engine {
 	r := gin.Default()
-	r.GET("/getip", func(c *gin.Context) {
-		server := Resource{ipifyHost}
-		reply := server.Get()
-		c.String(reply.status, reply.resp)
-	})
 
 	r.NoRoute(func(c *gin.Context) {
 		anything := c.Request.URL.Path
@@ -85,17 +99,19 @@ func SetupEndpoints() *gin.Engine {
 }
 
 type Forwarder struct {
-	route      string
-	forwardAPI string
+	route string
+	ResourceGetter
 }
 
-func SetupCustomForwardings(r *gin.Engine, fwds []Forwarder) *gin.Engine {
+func makeForwarder(route string, res ResourceGetter) *Forwarder {
+	return &Forwarder{route, res}
+}
+
+func setupForwardings(r *gin.Engine, fwds []Forwarder) *gin.Engine {
 	for _, fwd := range fwds {
 		r.GET(fwd.route, func(c *gin.Context) {
-			server := Resource{fwd.forwardAPI}
-			reply := server.Get()
-			fwdReply := Reply{reply.status, fmt.Sprintf("<- (from %v) %v", fwd.forwardAPI, reply.resp)}
-			c.String(fwdReply.status, fwdReply.resp)
+			reply := GetResource(fwd)
+			c.String(reply.status, reply.resp)
 		})
 	}
 	return r
@@ -129,7 +145,7 @@ func (f *Forwarders) Set(value string) error {
 	if len(u.Host) == 0 {
 		return fmt.Errorf("not found Host part")
 	}
-	*f = append(*f, Forwarder{tokens[0], tokens[1]})
+	*f = append(*f, *makeForwarder(tokens[0], Resource{tokens[1]}))
 	return nil
 }
 
@@ -138,6 +154,12 @@ var (
 	serverPort int
 	forwards   Forwarders
 )
+
+func getBuiltinForwarders() *Forwarders {
+	var forwards Forwarders
+	forwards = append(forwards, *makeForwarder("/getip", Resource{ipifyHost}))
+	return &forwards
+}
 
 func init() {
 	defaultHost := "" // listen and serve on 0.0.0.0:serverPort (for windows "localhost:serverPort")
@@ -148,9 +170,13 @@ func init() {
 		defaultHost = "0.0.0.0"
 	}
 
+	builtinFwds := *getBuiltinForwarders()
+
 	flag.IntVar(&serverPort, "p", 54321, "specify the port of echoes listen and serve")
 	flag.StringVar(&serverHost, "H", defaultHost, "bind the host of echoes with address")
 	flag.Var(&forwards, "fwd", "Forwardings pairs. format: [-fwd <route>:<URL> [-fwd <route>:<URL> ...]]\nExample: /foo:1.2.3.4:8080/bar")
+
+	forwards = append(forwards, builtinFwds...)
 	flag.Usage = usage
 }
 
@@ -164,8 +190,8 @@ func main() {
 
 	flag.Parse()
 
-	r := SetupEndpoints()
-	r = SetupCustomForwardings(r, forwards)
+	r := setupDefaults()
+	r = setupForwardings(r, forwards)
 	addr := fmt.Sprintf("%v:%v", serverHost, serverPort)
 	r.Run(addr)
 }
